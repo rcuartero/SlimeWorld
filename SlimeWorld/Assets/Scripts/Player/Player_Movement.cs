@@ -10,6 +10,11 @@ public class Player_Movement : MonoBehaviour
 
     [Header("Movement Properties")]
     [SerializeField] private float movementSpeed = 5;
+    [SerializeField] private Transform gimbal;
+
+    [Header("Rotation Properties")]
+    [SerializeField] private float rotationTime;
+    private float smoothDampVector;
 
     private void Awake()
     {
@@ -25,6 +30,12 @@ public class Player_Movement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.W)) rb.AddForce(transform.forward * movementSpeed);
+        // Movement force
+        if (Input.GetKey(KeyCode.W)) rb.AddForce(gimbal.forward * movementSpeed);
+        if (Input.GetKey(KeyCode.S)) rb.AddForce(-gimbal.forward * movementSpeed);
+        if (Input.GetKey(KeyCode.A)) rb.AddForce(-gimbal.right * movementSpeed);
+        if (Input.GetKey(KeyCode.D)) rb.AddForce(gimbal.right * movementSpeed);
+
+        // 
     }
 }
