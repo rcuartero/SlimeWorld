@@ -59,5 +59,12 @@ public class UIManager : MonoBehaviour
             Debug.LogError("Game Over Panel is not assigned in the inspector");
         }
     }
+
+    public void UpdateTimer(float currentTime)
+    {
+        int minutes = Mathf.FloorToInt(currentTime / 60);
+        int seconds = Mathf.FloorToInt(currentTime % 60);
+        timerText.text = $"{minutes:00}:{seconds:00}";
+    }
 }
 
