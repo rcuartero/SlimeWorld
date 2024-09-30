@@ -22,7 +22,7 @@ public class GravityObject : MonoBehaviour
     {
         Vector3 directionToPlanet = (GravitySource.instance.transform.position - transform.position).normalized;
 
-        rb.AddForce(directionToPlanet * value);
+        rb.AddForce(directionToPlanet * value * rb.mass);
 
         Quaternion worldDirection = Quaternion.FromToRotation(-transform.up, directionToPlanet) * transform.rotation;
         transform.rotation = Quaternion.Slerp(transform.rotation, worldDirection, 2 * Time.deltaTime);
