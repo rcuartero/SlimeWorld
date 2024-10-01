@@ -7,9 +7,12 @@ public class GravityObject : MonoBehaviour
 {
     private Rigidbody rb;
 
+    [SerializeField] private float rotateTime = 2;
+    
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        rb.useGravity = false;
     }
 
     // Start is called before the first frame update
@@ -25,6 +28,6 @@ public class GravityObject : MonoBehaviour
         rb.AddForce(directionToPlanet * value * rb.mass);
 
         Quaternion worldDirection = Quaternion.FromToRotation(-transform.up, directionToPlanet) * transform.rotation;
-        transform.rotation = Quaternion.Slerp(transform.rotation, worldDirection, 2 * Time.deltaTime);
+        transform.rotation = Quaternion.Slerp(transform.rotation, worldDirection, rotateTime * Time.deltaTime);
     }
 }

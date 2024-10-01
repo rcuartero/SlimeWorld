@@ -5,6 +5,7 @@ using UnityEngine;
 public class Player_Blower : MonoBehaviour
 {
     [Header("Blow Angle Properties")]
+    [SerializeField] private Transform blowerPoint;
     [SerializeField] private float blowerRange = 5;
     [SerializeField] private float maxBlowerAngle;      // Find the angle between object and forward and compare to this float
     [SerializeField] private LayerMask objectsLayer;
@@ -12,13 +13,7 @@ public class Player_Blower : MonoBehaviour
     [Header("Blow Strength Properties")]
     [SerializeField] private float blowStrength = 10;
 
-    private bool isActive = false;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public bool isActive = false;
 
     // Update is called once per frame
     void Update()
@@ -33,15 +28,24 @@ public class Player_Blower : MonoBehaviour
     private void ToggleBlower()
     {
         isActive = !isActive;
+
+        if (isActive) blowerPoint.gameObject.SetActive(true);
+        else if (!isActive) blowerPoint.gameObject.SetActive(false);
     }
 
     private void ActivateBlower()
     {
-        RaycastHit[] blownObjects = Physics.SphereCastAll(transform.position, blowerRange, transform.forward, blowerRange, objectsLayer);
+        Debug.Log(blowerPoint.forward);
+
+        RaycastHit[] blownObjects = Physics.SphereCastAll(blowerPoint.position, blowerRange, blowerPoint.forward, blowerRange, objectsLayer);
 
         foreach (RaycastHit objectToBlow in blownObjects)
         {
-            if (Vector3.Angle((objectToBlow.transform.position - transform.position).normalized, transform.forward) <= maxBlowerAngle)
+            if (blownObjects.Length == 0) Debug.Log("There is nothing here");
+
+            else Debug.Log(objectToBlow.transform.name);
+
+            if (Vector3.Angle((objectToBlow.transform.position - transform.position).normalized, blowerPoint.forward) <= maxBlowerAngle)
             {
                 BlowAway(objectToBlow.collider.gameObject);
             }

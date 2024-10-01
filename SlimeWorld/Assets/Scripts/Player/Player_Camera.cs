@@ -16,6 +16,6 @@ public class Player_Camera : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        gimbal.localRotation *= Quaternion.Euler(0, xSensitivity * Input.GetAxis("Mouse X"), 0);
+        gimbal.localRotation *= Quaternion.Euler(0, -xSensitivity * Input.GetAxis("Mouse X"), 0);
     }
 }

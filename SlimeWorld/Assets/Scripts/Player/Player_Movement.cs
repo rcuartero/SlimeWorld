@@ -13,29 +13,39 @@ public class Player_Movement : MonoBehaviour
     [SerializeField] private Transform gimbal;
 
     [Header("Rotation Properties")]
-    [SerializeField] private float rotationTime;
-    private float smoothDampVector;
+    [SerializeField] private Transform model;
+    [SerializeField] private float rotationValue;
+    private float turnSmoothVel;
+
+    [Header("Ground Check Properties")]
+    [SerializeField] private float groundCheckDistance = 1f;
+    [SerializeField] private LayerMask groundLayer;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        // Movement force
-        if (Input.GetKey(KeyCode.W)) rb.AddForce(gimbal.forward * movementSpeed);
-        if (Input.GetKey(KeyCode.S)) rb.AddForce(-gimbal.forward * movementSpeed);
-        if (Input.GetKey(KeyCode.A)) rb.AddForce(-gimbal.right * movementSpeed);
-        if (Input.GetKey(KeyCode.D)) rb.AddForce(gimbal.right * movementSpeed);
+        if (!Physics.Raycast(transform.position, -transform.up, groundCheckDistance, groundLayer)) Debug.Log("Not near ground");
+
+        rb.AddForce(gimbal.forward * movementSpeed * Input.GetAxis("Vertical"));
+        rb.AddForce(gimbal.right * movementSpeed * Input.GetAxis("Horizontal"));
 
         // 
+        TurnModel();
+    }
+
+    private void TurnModel()
+    {
+        Vector3 targetDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+
+        if (targetDirection == Vector3.zero) return;
+
+        Quaternion toRotation = Quaternion.LookRotation(gimbal.forward * Input.GetAxis("Vertical") + gimbal.right * Input.GetAxis("Horizontal"), transform.up);
+
+        model.rotation = Quaternion.RotateTowards(model.rotation, toRotation, rotationValue * Time.deltaTime);
     }
 }
