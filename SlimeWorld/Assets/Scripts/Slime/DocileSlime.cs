@@ -11,10 +11,11 @@ public class DocileSlime : MonoBehaviour
     [SerializeField] private float speed = 2f;
     [SerializeField] private float squishAmount = 0.05f;
     [SerializeField] private float squishSpeed = 0.5f;
-    [SerializeField] private float rotationSpeed = 5f;
+    [SerializeField] private float rotationSpeed = 2f;
 
     private Vector3 originalScale;
     private Rigidbody rb;
+    private Coroutine wobbleCoroutine;
 
     private void Start()
     {
@@ -24,7 +25,7 @@ public class DocileSlime : MonoBehaviour
 
     private void Update()
     {
-        //Will add coroutine once movement looks correct in testing
+        //Need to set up AI movement
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
@@ -41,22 +42,33 @@ public class DocileSlime : MonoBehaviour
         {
             Quaternion targetRotation = Quaternion.LookRotation(movement, gravityDirection);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-        }
 
-        if (movement != Vector3.zero)
-        {
-            Vector3 targetScale = new Vector3(
-                originalScale.x - Mathf.Abs(movement.x) * squishAmount,
-                originalScale.y + squishAmount,
-                originalScale.z - Mathf.Abs(movement.z) * squishAmount
-                );
-            transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * squishSpeed);
+            if (wobbleCoroutine == null)
+            {
+                wobbleCoroutine = StartCoroutine(WobbleEffect());
+            }
         }
         else
         {
+            if (wobbleCoroutine != null)
+            {
+                StopCoroutine(wobbleCoroutine);
+                wobbleCoroutine = null;
+            }
+
             transform.localScale = Vector3.Lerp(transform.localScale, originalScale, Time.deltaTime * squishSpeed);
         }
+    }
+    private IEnumerator WobbleEffect()
+    {
+        while (true)
+        {
+            float squishFactor = 1 - Mathf.Sin(Time.time * squishSpeed) * squishAmount;
+            Vector3 newScale = new Vector3(originalScale.x * squishFactor, originalScale.y, originalScale.z * squishFactor);
+            transform.localScale = Vector3.Lerp(transform.localScale, newScale, Time.deltaTime * squishSpeed); 
 
+            yield return null;
+        }
     }
 
 }
