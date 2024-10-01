@@ -8,9 +8,10 @@ public class DocileSlime : MonoBehaviour
 {
 
     [Header("Slime Movement Properties")]
-    [SerializeField] private float speed = 5f;
-    [SerializeField] private float squishAmount = 0.2f;
-    [SerializeField] private float squishSpeed = 5f;
+    [SerializeField] private float speed = 2f;
+    [SerializeField] private float squishAmount = 0.05f;
+    [SerializeField] private float squishSpeed = 0.5f;
+    [SerializeField] private float rotationSpeed = 5f;
 
     private Vector3 originalScale;
     private Rigidbody rb;
@@ -23,7 +24,7 @@ public class DocileSlime : MonoBehaviour
 
     private void Update()
     {
-        //Basic movement logic
+        //Will add coroutine once movement looks correct in testing
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
@@ -35,6 +36,12 @@ public class DocileSlime : MonoBehaviour
         Vector3 movement = (right * horizontal + forward * vertical).normalized * speed;
 
         rb.velocity = movement + rb.velocity.y * gravityDirection;
+
+        if (movement != Vector3.zero)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(movement, gravityDirection);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        }
 
         if (movement != Vector3.zero)
         {
